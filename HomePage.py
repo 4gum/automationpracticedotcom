@@ -40,7 +40,7 @@ class HomePage(unittest.TestCase):
         self.driver.title == 'Search - My Store'
 
     
-    #search text box witho waiting suggestion
+    #search text box with waiting suggestion
     def test_suggest_text_box(self):
         self.search_field = self.driver.find_element_by_id('search_query_top')
         self.search_field.send_keys('dress')
@@ -61,16 +61,16 @@ class HomePage(unittest.TestCase):
     def test_hover_tab(self):
 
         # hovering for single element
-        # element_to_hover_over = self.driver.find_element_by_xpath("//li/a[@class='sf-with-ul']")
-        # hover = ActionChains(self.driver).move_to_element(element_to_hover_over)
-        # hover.perform()
-        # try:
-        #     self.search_field = WebDriverWait(self.driver, 10).until(
-        #         EC.presence_of_element_located((By.XPATH, "//ul/li[@class='sfHover']"))
-        #     )
+        element_to_hover_over = self.driver.find_element_by_xpath("//li/a[@class='sf-with-ul']")
+        hover = ActionChains(self.driver).move_to_element(element_to_hover_over)
+        hover.perform()
+        try:
+            self.search_field = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//ul/li[@class='sfHover']"))
+            )
 
-        # except:
-        #     self.driver.quit()
+        except:
+            self.driver.quit()
 
         # hovering for multiple element
         elements_to_hover_over = self.driver.find_elements_by_xpath("//li/a[@class='sf-with-ul']")
@@ -79,7 +79,7 @@ class HomePage(unittest.TestCase):
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//ul/li[@class='sfHover']")))
             
     def test_tab_popular_best(self):
-        first we have to scroll to the element so we can clearly see what happend when script get execute
+        # first we have to scroll to the element so we can clearly see what happend when script get execute
         view = self.driver.find_element_by_id('center_column')
         self.driver.execute_script("arguments[0].scrollIntoView();", view)
 
@@ -87,13 +87,14 @@ class HomePage(unittest.TestCase):
         for i in elements:
             i.click()
 
-    # def test_hover_items_popbest(self):
-    #     view = self.driver.find_element_by_id('center_column')
-    #     self.driver.execute_script("arguments[0].scrollIntoView();", view)
-    #     elements_to_hover_over = self.driver.find_elements_by_xpath("//ul[@id='homefeatured']/li/div[@class='product-container']")
-    #     for element in elements_to_hover_over:
-    #         ActionChains(self.driver).move_to_element(element).perform()
-    #         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//ul[@id='homefeatured']/li[@class='hovered']")))
+    def test_hover_items_popbest(self):
+        view = self.driver.find_element_by_id('center_column')
+        self.driver.execute_script("arguments[0].scrollIntoView();", view)
+        elements_to_hover_over = self.driver.find_elements_by_xpath("//ul[@id='homefeatured']/li/div[@class='product-container']")
+        for element in elements_to_hover_over:
+            ActionChains(self.driver).move_to_element(element).perform()
+            # wait until classname hovered appear
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "hovered")))
     
     def test_quickview(self):
         view = self.driver.find_element_by_id('center_column')
@@ -107,6 +108,22 @@ class HomePage(unittest.TestCase):
 
         except:
             self.driver.quit()
+
+    def test_btn_more(self):
+        view = self.driver.find_element_by_id('center_column')
+        self.driver.execute_script("arguments[0].scrollIntoView();", view)
+
+        # get title from attribute title on tag <a title='a title here' />
+        a_title = self.driver.find_element_by_xpath("//div[@class='product-image-container']/a[@class='product_img_link']").get_attribute('title')
+
+        element = self.driver.find_element_by_xpath("//ul[@id='homefeatured']/li/div[@class='product-container']")
+        ActionChains(self.driver).move_to_element(element).perform()
+
+        self.search_field = self.driver.find_element_by_class_name("lnk_view")
+        self.search_field.click()
+
+        # check if the title page same as product we click
+        self.driver.title == f'{ a_title } - My Store'
 
         
     def tearDown(self):
